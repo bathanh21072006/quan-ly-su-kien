@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Lý Sự Kiện Pro</title>
+    <!-- Tích hợp Tailwind CSS để làm giao diện giống hệt bản Java Swing mới nhất -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .hidden-view { display: none !important; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-screen overflow-hidden">
+
+    <!-- ==================== MÀN HÌNH ĐĂNG NHẬP ==================== -->
+    <div id="login-screen" class="h-full flex items-center justify-center">
+        <div class="bg-white p-10 rounded-lg shadow-lg border border-slate-200 w-96">
+            <h2 class="text-2xl font-bold text-slate-800 text-center mb-6">ĐĂNG NHẬP</h2>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1">Tài khoản:</label>
+                <input type="text" id="login-user" class="w-full border border-slate-300 rounded p-2 focus:outline-none focus:border-blue-500" value="admin">
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-sm font-medium mb-1">Mật khẩu:</label>
+                <input type="password" id="login-pass" class="w-full border border-slate-300 rounded p-2 focus:outline-none focus:border-blue-500" value="123">
+            </div>
+            
+            <button onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200">
+                Đăng Nhập
+            </button>
+            <div class="mt-4 text-xs text-slate-500 text-center">
+                <p>Tài khoản test: admin/123 (Admin)</p>
+                <p>club_it/123 (CLB) | sv1/123 (Sinh viên)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== DASHBOARD CHÍNH ==================== -->
+    <div id="dashboard-screen" class="hidden-view h-full flex">
+        
+        <!-- SIDEBAR -->
+        <div class="w-64 bg-slate-800 text-white flex flex-col">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold tracking-wide">EVENT HUB</h1>
+            </div>
+            <nav id="sidebar-nav" class="flex-1 px-4 space-y-2 overflow-y-auto">
+                <!-- Nút menu sẽ được JS render dựa trên Role -->
+            </nav>
+            <div class="p-4 border-t border-slate-700">
+                <button onclick="handleLogout()" class="w-full text-left px-4 py-2 text-red-400 hover:bg-slate-700 rounded font-bold transition">
+                    Đăng Xuất
+                </button>
+            </div>
+        </div>
+
+        <!-- VÙNG NỘI DUNG (CONTENT AREA) -->
+        <div class="flex-1 flex flex-col bg-slate-50">
+            <!-- TOP HEADER -->
+            <header class="bg-white border-b border-slate-200 p-4 flex justify-between items-center shadow-sm">
+                <h2 class="text-xl font-bold" id="welcome-text">Xin chào!</h2>
+            </header>
+
+            <!-- CÁC TRANG CHỨC NĂNG (VIEWS) -->
+            <main class="flex-1 p-6 overflow-y-auto">
+                
+                <!-- VIEW: Danh sách tất cả sự kiện -->
+                <div id="view-all-events" class="hidden-view">
+                    <h3 class="text-2xl font-bold mb-4">Danh Sách Sự Kiện Hiện Có</h3>
+                    <div class="bg-white rounded shadow overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 border-b border-slate-200">
+                                    <th class="p-3">Tiêu đề</th>
+                                    <th class="p-3">Loại</th>
+                                    <th class="p-3">Quyền lợi</th>
+                                    <th class="p-3">Thời gian</th>
+                                    <th class="p-3">Tình trạng</th>
+                                    <th class="p-3">Số lượng</th>
+                                    <th class="p-3 text-center" id="th-action-register">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-all-events"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VIEW: Sự kiện của tôi (Sinh viên) -->
+                <div id="view-my-events" class="hidden-view">
+                    <h3 class="text-2xl font-bold mb-4">Sự Kiện Tôi Đã Đăng Ký</h3>
+                    <div class="bg-white rounded shadow overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 border-b border-slate-200">
+                                    <th class="p-3">Tiêu đề</th>
+                                    <th class="p-3">Thời gian</th>
+                                    <th class="p-3">Địa điểm</th>
+                                    <th class="p-3">Tình trạng</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-my-events"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VIEW: Quản lý bài đăng (CLB) -->
+                <div id="view-club-manage" class="hidden-view">
+                    <h3 class="text-2xl font-bold mb-4">Quản Lý Bài Đăng Của Đơn Vị</h3>
+                    <div class="bg-white rounded shadow overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 border-b border-slate-200">
+                                    <th class="p-3">Tiêu đề</th>
+                                    <th class="p-3">Loại</th>
+                                    <th class="p-3">Số lượng</th>
+                                    <th class="p-3 text-center">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-club-manage"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VIEW: Đăng bài mới (CLB) -->
+                <div id="view-club-new" class="hidden-view max-w-2xl">
+                    <h3 class="text-2xl font-bold mb-4">Đăng Bài Viết Mới</h3>
+                    <div class="bg-white p-6 rounded shadow border border-slate-200">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="col-span-2 sm:col-span-1">
+                                <label class="block text-sm font-medium mb-1">Loại sự kiện:</label>
+                                <select id="new-type" class="w-full border rounded p-2 focus:border-blue-500" onchange="toggleExtraLabel()">
+                                    <option value="Hỗ trợ">Tuyển Hỗ Trợ (Lương >= 25k)</option>
+                                    <option value="Dự khán">Tham Gia Dự Khán</option>
+                                </select>
+                            </div>
+                            <div class="col-span-2 sm:col-span-1">
+                                <label class="block text-sm font-medium mb-1">Tiêu đề:</label>
+                                <input type="text" id="new-title" class="w-full border rounded p-2 focus:border-blue-500">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-sm font-medium mb-1">Mô tả:</label>
+                                <input type="text" id="new-desc" class="w-full border rounded p-2 focus:border-blue-500">
+                            </div>
+                            <div class="col-span-2 sm:col-span-1">
+                                <label class="block text-sm font-medium mb-1">Thời gian:</label>
+                                <input type="text" id="new-time" class="w-full border rounded p-2 focus:border-blue-500" placeholder="DD/MM/YYYY HH:MM">
+                            </div>
+                            <div class="col-span-2 sm:col-span-1">
+                                <label class="block text-sm font-medium mb-1">Địa điểm:</label>
+                                <input type="text" id="new-loc" class="w-full border rounded p-2 focus:border-blue-500">
+                            </div>
+                            <div class="col-span-2 sm:col-span-1">
+                                <label class="block text-sm font-medium mb-1">Sức chứa tối đa:</label>
+                                <input type="number" id="new-max" class="w-full border rounded p-2 focus:border-blue-500" value="10">
+                            </div>
+                            <div class="col-span-2 sm:col-span-1">
+                                <label id="lbl-extra" class="block text-sm font-medium mb-1">Lương (VNĐ/h):</label>
+                                <input type="number" id="new-extra" class="w-full border rounded p-2 focus:border-blue-500">
+                            </div>
+                        </div>
+                        <button onclick="createNewEvent()" class="mt-6 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">
+                            Tạo Sự Kiện
+                        </button>
+                    </div>
+                </div>
+
+                <!-- VIEW: Dashboard (Admin) -->
+                <div id="view-admin-dash" class="hidden-view">
+                    <h3 class="text-2xl font-bold mb-4">Thống Kê Hệ Thống</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded shadow border-t-4 border-blue-500 text-center">
+                            <h4 class="text-slate-500 font-medium">Tổng Số User</h4>
+                            <p class="text-4xl font-bold text-slate-800 mt-2" id="stat-users">0</p>
+                        </div>
+                        <div class="bg-white p-6 rounded shadow border-t-4 border-amber-500 text-center">
+                            <h4 class="text-slate-500 font-medium">Tổng Sự Kiện</h4>
+                            <p class="text-4xl font-bold text-slate-800 mt-2" id="stat-events">0</p>
+                        </div>
+                        <div class="bg-white p-6 rounded shadow border-t-4 border-red-500 text-center">
+                            <h4 class="text-slate-500 font-medium">Sự Kiện Đã Đóng</h4>
+                            <p class="text-4xl font-bold text-slate-800 mt-2" id="stat-closed">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: Quản lý sự kiện (Admin) -->
+                <div id="view-admin-events" class="hidden-view">
+                    <h3 class="text-2xl font-bold mb-4">Quản Lý Tất Cả Bài Đăng</h3>
+                    <div class="bg-white rounded shadow overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 border-b border-slate-200">
+                                    <th class="p-3">ID</th>
+                                    <th class="p-3">Tiêu đề</th>
+                                    <th class="p-3">Trạng thái</th>
+                                    <th class="p-3 text-center">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-admin-events"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VIEW: Quản lý người dùng (Admin) -->
+                <div id="view-admin-users" class="hidden-view">
+                    <h3 class="text-2xl font-bold mb-4">Quản Lý Người Dùng</h3>
+                    <div class="bg-white rounded shadow overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 border-b border-slate-200">
+                                    <th class="p-3">ID</th>
+                                    <th class="p-3">Tài khoản</th>
+                                    <th class="p-3">Họ Tên</th>
+                                    <th class="p-3">Vai trò</th>
+                                    <th class="p-3 text-center">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-admin-users"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VIEW: Hồ sơ cá nhân -->
+                <div id="view-profile" class="hidden-view max-w-lg">
+                    <h3 class="text-2xl font-bold mb-4">Thông Tin Của Bạn</h3>
+                    <div class="bg-white rounded shadow border border-slate-200 overflow-hidden">
+                        <div class="p-6 border-b border-slate-200">
+                            <pre id="profile-text" class="font-sans text-lg whitespace-pre-wrap leading-relaxed"></pre>
+                        </div>
+                        <div class="p-4 bg-slate-50">
+                            <button onclick="editName()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-4 rounded">
+                                Đổi Tên Hiển Thị
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+    <script>
+        // --- 1. SEED DATA & LOCAL STORAGE ---
+        function initData() {
+            if (!localStorage.getItem('ems_users')) {
+                const initialUsers = [
+                    { id: "A1", username: "admin", password: "123", fullName: "Quản trị viên Hệ thống", role: "ADMIN" },
+                    { id: "C1", username: "club_it", password: "123", fullName: "CLB Tin Học", desc: "Tổ chức các sự kiện công nghệ", role: "CLUB" },
+                    { id: "C2", username: "company_x", password: "123", fullName: "Công ty X", desc: "Tuyển dụng sinh viên", role: "CLUB" },
+                    { id: "S1", username: "sv1", password: "123", fullName: "Nguyễn Văn A", studentCode: "SV001", role: "STUDENT" },
+                    { id: "S2", username: "sv2", password: "123", fullName: "Trần Thị B", studentCode: "SV002", role: "STUDENT" }
+                ];
+                localStorage.setItem('ems_users', JSON.stringify(initialUsers));
+            }
+            if (!localStorage.getItem('ems_events')) {
+                const initialEvents = [
+                    { id: "E1", title: "Tech Talk: AI & Future", desc: "Setup sân khấu, check-in", time: "15/10/2026 08:00", location: "Hội trường A", maxParticipants: 5, organizerId: "C1", registeredStudentIds: [], status: "OPEN", type: "Hỗ trợ", extra: "30000" },
+                    { id: "E2", title: "Hội thảo Khởi nghiệp", desc: "Nghe diễn giả chia sẻ", time: "20/10/2026 14:00", location: "Phòng 302", maxParticipants: 50, organizerId: "C1", registeredStudentIds: [], status: "OPEN", type: "Dự khán", extra: "5" }
+                ];
+                localStorage.setItem('ems_events', JSON.stringify(initialEvents));
+            }
+        }
+
+        function getUsers() { return JSON.parse(localStorage.getItem('ems_users')); }
+        function saveUsers(users) { localStorage.setItem('ems_users', JSON.stringify(users)); }
+        
+        function getEvents() { return JSON.parse(localStorage.getItem('ems_events')); }
+        function saveEvents(events) { localStorage.setItem('ems_events', JSON.stringify(events)); }
+
+        let currentUser = null;
+
+        // --- 2. AUTHENTICATION ---
+        function handleLogin() {
+            const u = document.getElementById('login-user').value;
+            const p = document.getElementById('login-pass').value;
+            const users = getUsers();
+            
+            const user = users.find(x => x.username === u && x.password === p);
+            if (user) {
+                currentUser = user;
+                document.getElementById('login-screen').classList.add('hidden-view');
+                document.getElementById('dashboard-screen').classList.remove('hidden-view');
+                document.getElementById('welcome-text').innerText = "Xin chào, " + user.fullName;
+                buildSidebar();
+            } else {
+                alert("Sai tài khoản hoặc mật khẩu!");
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            document.getElementById('dashboard-screen').classList.add('hidden-view');
+            document.getElementById('login-screen').classList.remove('hidden-view');
+        }
+
+        // --- 3. UI ROUTING & BUILDER ---
+        function switchView(viewId) {
+            document.querySelectorAll('main > div').forEach(el => el.classList.add('hidden-view'));
+            document.getElementById(viewId).classList.remove('hidden-view');
+            
+            // Execute render functions based on view
+            if(viewId === 'view-all-events') renderAllEvents();
+            if(viewId === 'view-my-events') renderMyEvents();
+            if(viewId === 'view-profile') renderProfile();
+            if(viewId === 'view-club-manage') renderClubManage();
+            if(viewId === 'view-admin-dash') renderAdminDash();
+            if(viewId === 'view-admin-events') renderAdminEvents();
+            if(viewId === 'view-admin-users') renderAdminUsers();
+        }
+
+        function createNavBtn(text, viewId) {
+            return `<button onclick="switchView('${viewId}')" class="w-full text-left px-4 py-3 rounded font-bold hover:bg-slate-700 transition">${text}</button>`;
+        }
+
+        function buildSidebar() {
+            const nav = document.getElementById('sidebar-nav');
+            let html = '';
+            
+            if (currentUser.role === 'STUDENT') {
+                html += createNavBtn('Tất Cả Sự Kiện', 'view-all-events');
+                html += createNavBtn('Sự Kiện Của Tôi', 'view-my-events');
+                html += createNavBtn('Hồ Sơ Cá Nhân', 'view-profile');
+                switchView('view-all-events');
+            } else if (currentUser.role === 'CLUB') {
+                html += createNavBtn('Tất Cả Sự Kiện', 'view-all-events');
+                html += createNavBtn('Quản Lý Bài Đăng', 'view-club-manage');
+                html += createNavBtn('Đăng Sự Kiện Mới', 'view-club-new');
+                html += createNavBtn('Thông Tin Đơn Vị', 'view-profile');
+                switchView('view-all-events');
+            } else if (currentUser.role === 'ADMIN') {
+                html += createNavBtn('Dashboard Thống Kê', 'view-admin-dash');
+                html += createNavBtn('Quản Lý Bài Đăng', 'view-admin-events');
+                html += createNavBtn('Quản Lý User', 'view-admin-users');
+                switchView('view-admin-dash');
+            }
+            nav.innerHTML = html;
+
+            // Hide Action column in All Events if not student
+            if(currentUser.role !== 'STUDENT') {
+                document.getElementById('th-action-register').style.display = 'none';
+            } else {
+                document.getElementById('th-action-register').style.display = 'table-cell';
+            }
+        }
+
+        // --- 4. RENDERERS & LOGIC ---
+
+        // Xem tất cả sự kiện (SV + CLB)
+        function renderAllEvents() {
+            const events = getEvents();
+            const tbody = document.getElementById('tbody-all-events');
+            tbody.innerHTML = '';
+            
+            events.forEach(e => {
+                const statusStr = e.status === 'OPEN' ? '<span class="text-green-600 font-bold">Đang Mở</span>' : '<span class="text-red-600 font-bold">Đã Đóng</span>';
+                const progress = `${e.registeredStudentIds.length}/${e.maxParticipants}`;
+                const extraInfo = e.type === 'Hỗ trợ' ? `Lương: ${e.extra}đ/h` : `Điểm: ${e.extra}`;
+                
+                let actionHtml = '';
+                if (currentUser.role === 'STUDENT') {
+                    const isReg = e.registeredStudentIds.includes(currentUser.id);
+                    if (isReg) actionHtml = `<td class="p-3 text-center"><span class="text-slate-500 italic">Đã tham gia</span></td>`;
+                    else if (e.status === 'CLOSED') actionHtml = `<td class="p-3 text-center"><button disabled class="bg-gray-300 text-gray-500 py-1 px-3 rounded">Đã đầy</button></td>`;
+                    else actionHtml = `<td class="p-3 text-center"><button onclick="registerEvent('${e.id}')" class="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded text-sm">Đăng ký</button></td>`;
+                }
+
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-200 hover:bg-slate-50">
+                        <td class="p-3 font-medium">${e.title}</td>
+                        <td class="p-3">${e.type}</td>
+                        <td class="p-3">${extraInfo}</td>
+                        <td class="p-3 text-sm">${e.time}</td>
+                        <td class="p-3">${statusStr}</td>
+                        <td class="p-3">${progress}</td>
+                        ${currentUser.role === 'STUDENT' ? actionHtml : ''}
+                    </tr>
+                `;
+            });
+        }
+
+        // Đăng ký sự kiện (SV)
+        function registerEvent(eventId) {
+            let events = getEvents();
+            let e = events.find(x => x.id === eventId);
+            if(e.status === 'CLOSED' || e.registeredStudentIds.length >= e.maxParticipants) {
+                alert("Sự kiện đã đóng hoặc đủ số lượng!"); return;
+            }
+            e.registeredStudentIds.push(currentUser.id);
+            if(e.registeredStudentIds.length >= e.maxParticipants) e.status = 'CLOSED';
+            saveEvents(events);
+            alert("Đăng ký thành công!");
+            renderAllEvents();
+        }
+
+        // Sự kiện của tôi (SV)
+        function renderMyEvents() {
+            const events = getEvents().filter(e => e.registeredStudentIds.includes(currentUser.id));
+            const tbody = document.getElementById('tbody-my-events');
+            tbody.innerHTML = '';
+            events.forEach(e => {
+                const statusStr = e.status === 'OPEN' ? '<span class="text-green-600 font-bold">Đang Mở</span>' : '<span class="text-red-600 font-bold">Đã Đóng</span>';
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-200 hover:bg-slate-50">
+                        <td class="p-3 font-medium">${e.title}</td>
+                        <td class="p-3">${e.time}</td>
+                        <td class="p-3">${e.location}</td>
+                        <td class="p-3">${statusStr}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Hồ sơ
+        function renderProfile() {
+            let info = `Vai trò: ${currentUser.role}\nHọ Tên: ${currentUser.fullName}\n`;
+            if (currentUser.role === 'ADMIN') info += `Tài khoản: ${currentUser.username}`;
+            else if (currentUser.role === 'CLUB') info += `Mô tả: ${currentUser.desc}`;
+            else if (currentUser.role === 'STUDENT') info += `MSSV: ${currentUser.studentCode}`;
+            document.getElementById('profile-text').innerText = info;
+        }
+
+        function editName() {
+            const newName = prompt("Nhập tên hiển thị mới:", currentUser.fullName);
+            if (newName && newName.trim() !== '') {
+                currentUser.fullName = newName.trim();
+                let users = getUsers();
+                let u = users.find(x => x.id === currentUser.id);
+                u.fullName = currentUser.fullName;
+                saveUsers(users);
+                renderProfile();
+                document.getElementById('welcome-text').innerText = "Xin chào, " + currentUser.fullName;
+                alert("Đổi tên thành công!");
+            }
+        }
+
+        // Quản lý sự kiện (CLB)
+        function renderClubManage() {
+            const events = getEvents().filter(e => e.organizerId === currentUser.id);
+            const tbody = document.getElementById('tbody-club-manage');
+            tbody.innerHTML = '';
+            events.forEach(e => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-200 hover:bg-slate-50">
+                        <td class="p-3 font-medium">${e.title}</td>
+                        <td class="p-3">${e.type}</td>
+                        <td class="p-3">${e.registeredStudentIds.length}/${e.maxParticipants}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="viewParticipants('${e.id}')" class="bg-slate-800 text-white py-1 px-2 rounded text-sm mr-2">Xem SV</button>
+                            <button onclick="editEvent('${e.id}')" class="bg-blue-600 text-white py-1 px-2 rounded text-sm">Sửa</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function viewParticipants(eventId) {
+            const event = getEvents().find(x => x.id === eventId);
+            const users = getUsers();
+            let list = event.registeredStudentIds.map(id => {
+                let u = users.find(x => x.id === id);
+                return `- ${u.fullName} (${u.studentCode})`;
+            }).join('\n');
+            if(list === '') list = "Chưa có sinh viên nào đăng ký.";
+            alert(`Danh sách tham gia:\n${list}`);
+        }
+
+        function editEvent(eventId) {
+            let events = getEvents();
+            let event = events.find(x => x.id === eventId);
+            const newMaxStr = prompt(`Sửa sức chứa tối đa (Hiện có ${event.registeredStudentIds.length} người đk):`, event.maxParticipants);
+            if(newMaxStr !== null) {
+                const newMax = parseInt(newMaxStr);
+                if(!isNaN(newMax)) {
+                    event.maxParticipants = newMax;
+                    if(event.maxParticipants > event.registeredStudentIds.length) event.status = 'OPEN';
+                    else event.status = 'CLOSED';
+                    saveEvents(events);
+                    alert("Cập nhật thành công!");
+                    renderClubManage();
+                } else alert("Dữ liệu không hợp lệ!");
+            }
+        }
+
+        // Đăng bài mới (CLB)
+        function toggleExtraLabel() {
+            const type = document.getElementById('new-type').value;
+            document.getElementById('lbl-extra').innerText = type === 'Hỗ trợ' ? 'Lương (VNĐ/h):' : 'Điểm đoàn:';
+        }
+
+        function createNewEvent() {
+            const title = document.getElementById('new-title').value;
+            const desc = document.getElementById('new-desc').value;
+            const time = document.getElementById('new-time').value;
+            const loc = document.getElementById('new-loc').value;
+            const max = parseInt(document.getElementById('new-max').value);
+            const extra = parseInt(document.getElementById('new-extra').value);
+            const type = document.getElementById('new-type').value;
+
+            if(!title || !loc || isNaN(max) || isNaN(extra)) {
+                alert("Vui lòng điền đủ và đúng định dạng!"); return;
+            }
+            if(type === 'Hỗ trợ' && extra < 25000) {
+                alert("Lương hỗ trợ phải >= 25000đ!"); return;
+            }
+
+            let events = getEvents();
+            const newId = "E" + (events.length + 1) + Date.now();
+            events.push({
+                id: newId, title: title, desc: desc, time: time, location: loc, maxParticipants: max,
+                organizerId: currentUser.id, registeredStudentIds: [], status: "OPEN", type: type, extra: extra
+            });
+            saveEvents(events);
+            alert("Tạo sự kiện thành công!");
+            document.getElementById('new-title').value = '';
+            document.getElementById('new-desc').value = '';
+            document.getElementById('new-extra').value = '';
+        }
+
+        // Admin Dashboard
+        function renderAdminDash() {
+            const users = getUsers();
+            const events = getEvents();
+            document.getElementById('stat-users').innerText = users.length;
+            document.getElementById('stat-events').innerText = events.length;
+            document.getElementById('stat-closed').innerText = events.filter(e => e.status === 'CLOSED').length;
+        }
+
+        // Admin Manage Events
+        function renderAdminEvents() {
+            const events = getEvents();
+            const tbody = document.getElementById('tbody-admin-events');
+            tbody.innerHTML = '';
+            events.forEach(e => {
+                const statusStr = e.status === 'OPEN' ? '<span class="text-green-600">Đang Mở</span>' : '<span class="text-red-600">Đã Đóng</span>';
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-200">
+                        <td class="p-3">${e.id.substring(0,6)}</td>
+                        <td class="p-3 font-medium">${e.title}</td>
+                        <td class="p-3">${statusStr}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="adminDeleteEvent('${e.id}')" class="bg-red-500 text-white py-1 px-3 rounded text-sm">Xóa</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function adminDeleteEvent(eventId) {
+            if(confirm("Bạn có chắc muốn xóa sự kiện này?")) {
+                let events = getEvents();
+                events = events.filter(e => e.id !== eventId);
+                saveEvents(events);
+                renderAdminEvents();
+            }
+        }
+
+        // Admin Manage Users
+        function renderAdminUsers() {
+            const users = getUsers();
+            const tbody = document.getElementById('tbody-admin-users');
+            tbody.innerHTML = '';
+            users.forEach(u => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-200">
+                        <td class="p-3">${u.id}</td>
+                        <td class="p-3">${u.username}</td>
+                        <td class="p-3">${u.fullName}</td>
+                        <td class="p-3">${u.role}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="adminDeleteUser('${u.id}')" class="bg-red-500 text-white py-1 px-3 rounded text-sm">Xóa</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function adminDeleteUser(userId) {
+            if(userId === currentUser.id) { alert("Không thể tự xóa chính mình!"); return; }
+            if(confirm("Xóa User này sẽ xóa luôn các sự kiện của họ. Bạn chắc chứ?")) {
+                let users = getUsers();
+                let events = getEvents();
+                users = users.filter(u => u.id !== userId);
+                events = events.filter(e => e.organizerId !== userId); // Xóa sự kiện liên quan
+                saveUsers(users); saveEvents(events);
+                renderAdminUsers();
+            }
+        }
+
+        // Khởi chạy khi load trang
+        initData();
+    </script>
+</body>
+</html>
