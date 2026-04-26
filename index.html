@@ -12,7 +12,6 @@
         .tab-btn { transition: all 0.2s; border-bottom: 2px solid transparent; }
         .tab-btn.active { border-bottom-color: #2563eb; color: #2563eb; font-weight: bold; }
         .event-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
-        /* CSS cho Loading overlay */
         #loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -34,12 +33,12 @@
             
             <div class="mb-4">
                 <label class="block text-sm font-medium mb-1">Tài khoản:</label>
-                <input type="text" id="login-user" class="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:border-blue-500" placeholder="Nhập tên đăng nhập">
+                <input type="text" id="login-user" class="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:border-blue-500">
             </div>
             
             <div class="mb-6">
                 <label class="block text-sm font-medium mb-1">Mật khẩu:</label>
-                <input type="password" id="login-pass" class="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:border-blue-500" placeholder="Nhập mật khẩu">
+                <input type="password" id="login-pass" class="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:border-blue-500">
             </div>
             
             <button onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-lg transition duration-200 shadow-md">
@@ -74,22 +73,18 @@
                     <label class="block text-sm font-medium mb-1">Tên đăng nhập: <span class="text-red-500">*</span></label>
                     <input type="text" id="reg-user" class="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:border-emerald-500">
                 </div>
-                
                 <div class="col-span-2">
                     <label class="block text-sm font-medium mb-1">Mật khẩu: <span class="text-red-500">*</span></label>
                     <input type="password" id="reg-pass" class="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:border-emerald-500">
                 </div>
-
                 <div class="col-span-2">
                     <label id="lbl-fullname" class="block text-sm font-medium mb-1">Họ và Tên: <span class="text-red-500">*</span></label>
                     <input type="text" id="reg-fullname" class="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:border-emerald-500">
                 </div>
-
                 <div id="field-student" class="col-span-2">
                     <label class="block text-sm font-medium mb-1">Mã sinh viên (MSSV): <span class="text-red-500">*</span></label>
                     <input type="text" id="reg-mssv" class="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:border-emerald-500">
                 </div>
-
                 <div id="field-club" class="col-span-2 hidden-view">
                     <label class="block text-sm font-medium mb-1">Mô tả hoạt động / Lĩnh vực: <span class="text-red-500">*</span></label>
                     <input type="text" id="reg-desc" class="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:border-emerald-500">
@@ -99,18 +94,14 @@
             <button onclick="handleRegister()" class="mt-6 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-lg transition duration-200 shadow-md">
                 Hoàn Tất Đăng Ký
             </button>
-            
             <div class="mt-4 text-center">
-                <p class="text-sm text-slate-600">Đã có tài khoản? 
-                    <button onclick="switchAuthScreen('login')" class="text-blue-600 hover:underline font-bold">Đăng nhập</button>
-                </p>
+                <p class="text-sm text-slate-600">Đã có tài khoản? <button onclick="switchAuthScreen('login')" class="text-blue-600 hover:underline font-bold">Đăng nhập</button></p>
             </div>
         </div>
     </div>
 
     <!-- ==================== DASHBOARD CHÍNH ==================== -->
     <div id="dashboard-screen" class="hidden-view h-full flex">
-        <!-- SIDEBAR -->
         <div class="w-64 bg-slate-900 text-white flex flex-col shadow-2xl z-10">
             <div class="p-6 flex items-center border-b border-slate-800">
                 <i class="fa-solid fa-calendar-check text-blue-500 text-2xl mr-3"></i>
@@ -124,22 +115,18 @@
             </div>
         </div>
 
-        <!-- VÙNG NỘI DUNG -->
         <div class="flex-1 flex flex-col bg-slate-50 relative overflow-hidden">
             <header class="bg-white border-b border-slate-200 p-4 px-8 flex justify-between items-center shadow-sm z-0">
                 <h2 class="text-xl font-bold text-slate-700" id="welcome-text">Xin chào!</h2>
             </header>
 
             <main class="flex-1 p-8 overflow-y-auto">
-                
-                <!-- KHÁM PHÁ SỰ KIỆN -->
                 <div id="view-all-events" class="hidden-view">
                     <h3 class="text-3xl font-bold text-slate-800 mb-1">Khám Phá Sự Kiện</h3>
                     <p class="text-slate-500 mb-6">Tìm kiếm và tham gia các hoạt động thú vị quanh trường.</p>
                     <div id="events-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
                 </div>
 
-                <!-- SỰ KIỆN CỦA TÔI -->
                 <div id="view-my-events" class="hidden-view">
                     <h3 class="text-3xl font-bold text-slate-800 mb-6">Sự Kiện Tôi Đã Đăng Ký</h3>
                     <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-slate-200">
@@ -156,7 +143,6 @@
                     </div>
                 </div>
 
-                <!-- QUẢN LÝ BÀI ĐĂNG (CLB) -->
                 <div id="view-club-manage" class="hidden-view">
                     <h3 class="text-3xl font-bold text-slate-800 mb-6">Quản Lý Bài Đăng</h3>
                     <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-slate-200">
@@ -173,7 +159,6 @@
                     </div>
                 </div>
 
-                <!-- ĐĂNG BÀI MỚI -->
                 <div id="view-club-new" class="hidden-view max-w-4xl mx-auto">
                     <h3 class="text-3xl font-bold text-slate-800 mb-6">Đăng Bài Viết Mới</h3>
                     <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-200">
@@ -210,11 +195,10 @@
 
     <!-- ==================== FIREBASE & JS LOGIC ==================== -->
     <script type="module">
-        // Import các hàm của Firebase từ máy chủ Google
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, setDoc, getDoc, updateDoc, addDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, setDoc, getDoc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // ========================================================
+        // CONFIG CỦA BẠN (Mình đã điền sẵn theo ảnh bạn cung cấp)
         const firebaseConfig = {
           apiKey: "AIzaSyAusCYYGJyyGEAAjbt2uMKQV-FaM6M5YX8",
           authDomain: "eventhub-df93c.firebaseapp.com",
@@ -224,56 +208,41 @@
           appId: "1:1063492294571:web:aed9692932e8af6533e4ee",
           measurementId: "G-RMFSQGHBKH"
         };        
-        // ========================================================
 
-        // Khởi tạo Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Biến toàn cục
         window.currentUser = null;
         window.currentRegRole = 'STUDENT';
-
-        // Bật/Tắt màn hình Loading
         window.showLoading = (show) => { document.getElementById('loading-overlay').classList.toggle('hidden-view', !show); };
 
-        // --- ĐĂNG KÝ (LƯU LÊN FIREBASE) ---
         window.handleRegister = async () => {
             const u = document.getElementById('reg-user').value.trim();
             const p = document.getElementById('reg-pass').value.trim();
             const fn = document.getElementById('reg-fullname').value.trim();
-            
             if(!u || !p || !fn) { alert("Vui lòng điền đủ thông tin!"); return; }
 
             showLoading(true);
             try {
-                // Kiểm tra xem username đã tồn tại chưa (Dùng username làm ID Document)
                 const docRef = doc(db, "users", u);
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
-                    alert("Tên đăng nhập đã tồn tại!"); showLoading(false); return;
-                }
-
-                // Chuẩn bị dữ liệu lưu
-                let userData = { username: u, password: p, fullName: fn, role: window.currentRegRole };
-                if (window.currentRegRole === 'STUDENT') {
-                    userData.studentCode = document.getElementById('reg-mssv').value.trim();
+                    alert("Tên đăng nhập đã tồn tại!"); 
                 } else {
-                    userData.desc = document.getElementById('reg-desc').value.trim();
-                }
+                    let userData = { username: u, password: p, fullName: fn, role: window.currentRegRole };
+                    if (window.currentRegRole === 'STUDENT') userData.studentCode = document.getElementById('reg-mssv').value.trim();
+                    else userData.desc = document.getElementById('reg-desc').value.trim();
 
-                // Lưu vào Firestore collection "users"
-                await setDoc(docRef, userData);
-                
-                alert("Đăng ký thành công!");
-                window.switchAuthScreen('login');
-                document.getElementById('login-user').value = u;
-            } catch (e) { alert("Lỗi kết nối Firebase: " + e.message); }
+                    await setDoc(docRef, userData);
+                    alert("Đăng ký thành công!");
+                    window.switchAuthScreen('login');
+                    document.getElementById('login-user').value = u;
+                }
+            } catch (e) { alert("Lỗi Firebase: " + e.message + "\n(Vui lòng đảm bảo bạn đã chỉnh Rules thành 'true')"); }
             showLoading(false);
         };
 
-        // --- ĐĂNG NHẬP (LẤY TỪ FIREBASE) ---
         window.handleLogin = async () => {
             const u = document.getElementById('login-user').value.trim();
             const p = document.getElementById('login-pass').value.trim();
@@ -286,15 +255,15 @@
                 if (docSnap.exists()) {
                     let user = docSnap.data();
                     if(user.password === p) {
-                        user.id = u; // Gắn id là username
+                        user.id = u;
                         window.currentUser = user;
                         document.getElementById('login-screen').classList.add('hidden-view');
                         document.getElementById('dashboard-screen').classList.remove('hidden-view');
                         document.getElementById('welcome-text').innerText = "Chào mừng, " + user.fullName;
                         window.buildSidebar();
-                    } else { alert("Sai mật khẩu!"); }
-                } else { alert("Tài khoản không tồn tại!"); }
-            } catch (e) { alert("Lỗi mạng: Vui lòng dán Firebase Config vào code."); }
+                    } else alert("Sai mật khẩu!");
+                } else alert("Tài khoản không tồn tại! Bạn hãy chuyển sang Đăng ký nhé.");
+            } catch (e) { alert("Lỗi Firebase: " + e.message + "\n(Vui lòng đảm bảo bạn đã chỉnh Rules thành 'true')"); }
             showLoading(false);
         };
 
@@ -304,7 +273,6 @@
             document.getElementById('login-screen').classList.remove('hidden-view');
         };
 
-        // --- TẢI DANH SÁCH SỰ KIỆN (LẤY TỪ FIREBASE) ---
         window.loadAllEvents = async () => {
             showLoading(true);
             try {
@@ -314,14 +282,15 @@
                 
                 querySnapshot.forEach((docSnap) => {
                     let e = docSnap.data(); e.id = docSnap.id;
-                    const isFull = e.registeredStudentIds.length >= e.maxParticipants;
+                    const isFull = e.registeredStudentIds && e.registeredStudentIds.length >= e.maxParticipants;
                     const statusBadge = e.status === 'OPEN' ? `<span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full">Đang Mở</span>` : `<span class="bg-red-100 text-red-700 text-xs font-bold px-2 py-1 rounded-full">Đã Đóng</span>`;
                     const typeBadge = `<span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-full">${e.type}</span>`;
                     const imgSource = e.image || "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80";
+                    const regCount = e.registeredStudentIds ? e.registeredStudentIds.length : 0;
 
                     let actionBtn = '';
                     if (window.currentUser && window.currentUser.role === 'STUDENT') {
-                        const isReg = e.registeredStudentIds.includes(window.currentUser.id);
+                        const isReg = e.registeredStudentIds && e.registeredStudentIds.includes(window.currentUser.id);
                         if (isReg) actionBtn = `<button disabled class="w-full mt-4 bg-slate-100 text-slate-500 font-bold py-2 rounded-lg border">Đã tham gia</button>`;
                         else if (e.status === 'CLOSED' || isFull) actionBtn = `<button disabled class="w-full mt-4 bg-red-50 text-red-400 font-bold py-2 rounded-lg border">Đã đủ số lượng</button>`;
                         else actionBtn = `<button onclick="registerEvent('${e.id}')" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg">Đăng ký ngay</button>`;
@@ -341,17 +310,16 @@
                                 <p class="text-sm text-slate-600 mb-3"><i class="fa-solid fa-location-dot w-4"></i> ${e.location}</p>
                                 <div class="pt-3 border-t border-slate-100 flex justify-between text-sm">
                                     <span class="text-slate-500">Đã đăng ký:</span>
-                                    <span class="font-bold ${isFull?'text-red-500':'text-blue-600'}">${e.registeredStudentIds.length} / ${e.maxParticipants}</span>
+                                    <span class="font-bold ${isFull?'text-red-500':'text-blue-600'}">${regCount} / ${e.maxParticipants}</span>
                                 </div>
                                 ${actionBtn}
                             </div>
                         </div>`;
                 });
-            } catch (e) { alert("Lỗi tải sự kiện!"); }
+            } catch (e) { alert("Lỗi tải sự kiện: " + e.message); }
             showLoading(false);
         };
 
-        // --- ĐĂNG KÝ SỰ KIỆN (CẬP NHẬT LÊN FIREBASE) ---
         window.registerEvent = async (eventId) => {
             showLoading(true);
             try {
@@ -359,26 +327,20 @@
                 const eventSnap = await getDoc(eventRef);
                 if(eventSnap.exists()) {
                     let e = eventSnap.data();
-                    if(e.status === 'CLOSED' || e.registeredStudentIds.length >= e.maxParticipants) {
+                    let currentRegs = e.registeredStudentIds || [];
+                    if(e.status === 'CLOSED' || currentRegs.length >= e.maxParticipants) {
                         alert("Sự kiện đã đầy!"); showLoading(false); return;
                     }
-                    e.registeredStudentIds.push(window.currentUser.id);
-                    let newStatus = e.registeredStudentIds.length >= e.maxParticipants ? 'CLOSED' : 'OPEN';
+                    currentRegs.push(window.currentUser.id);
+                    let newStatus = currentRegs.length >= e.maxParticipants ? 'CLOSED' : 'OPEN';
                     
-                    // Cập nhật lên Cloud
-                    await updateDoc(eventRef, {
-                        registeredStudentIds: e.registeredStudentIds,
-                        status: newStatus
-                    });
-                    
-                    alert("Đăng ký thành công!");
-                    window.loadAllEvents();
+                    await updateDoc(eventRef, { registeredStudentIds: currentRegs, status: newStatus });
+                    alert("Đăng ký thành công!"); window.loadAllEvents();
                 }
-            } catch (e) { alert("Lỗi đăng ký!"); }
+            } catch (e) { alert("Lỗi đăng ký: " + e.message); }
             showLoading(false);
         };
 
-        // --- TẠO SỰ KIỆN MỚI (THÊM VÀO FIREBASE) ---
         window.createNewEvent = async () => {
             const title = document.getElementById('new-title').value;
             const desc = document.getElementById('new-desc').value;
@@ -398,14 +360,12 @@
                     organizerId: window.currentUser.id, registeredStudentIds: [], status: "OPEN", type: type, extra: extra, image: image
                 });
                 alert("Tạo sự kiện thành công!");
-                document.getElementById('new-title').value = '';
-                document.getElementById('new-desc').value = '';
-                document.getElementById('new-extra').value = '';
-            } catch (e) { alert("Lỗi khi tạo sự kiện!"); }
+                document.getElementById('new-title').value = ''; document.getElementById('new-desc').value = '';
+                document.getElementById('new-extra').value = ''; document.getElementById('new-image').value = '';
+            } catch (e) { alert("Lỗi khi tạo sự kiện: " + e.message); }
             showLoading(false);
         };
 
-        // --- CÁC HÀM UI CƠ BẢN ---
         window.setRegRole = (role) => {
             window.currentRegRole = role;
             if(role==='STUDENT'){
@@ -429,7 +389,6 @@
             document.querySelectorAll('main > div').forEach(el => el.classList.add('hidden-view'));
             document.getElementById(viewId).classList.remove('hidden-view');
             if(viewId === 'view-all-events') window.loadAllEvents();
-            // Các view khác (view-my-events, view-club-manage) mình xin phép rút gọn ở bản mẫu này để code dễ hiểu, bạn có thể tự viết hàm load tương tự loadAllEvents với lệnh where() của Firebase.
         };
 
         window.buildSidebar = () => {
